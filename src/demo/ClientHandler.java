@@ -31,10 +31,8 @@ public class ClientHandler extends Thread {
             login(br, wr);
 
             while (true) {
-                wr.write(name + "> ");
-                wr.flush();
-
                 String answer = br.readLine();
+
                 switch (answer.toLowerCase(Locale.ROOT).split("\\s")[0].trim()) {
                     case "quit":
                         server.logout(this);
@@ -78,7 +76,8 @@ public class ClientHandler extends Thread {
     public void message(String message) throws IOException {
         String before = new String(new byte[] { 0x0b, 0x1b, '[', '1', 'A', 0x1b, '7', 0x1b, '[', '1', 'L', '\r' });
         String after = new String(new byte[] { 0x1b, '8', 0x1b, '[', '1', 'B' });
-        wr.write(before + message + after);
+        // wr.write(before + message + after);
+        wr.write(message + "\n");
         wr.flush();
     }
 
@@ -87,7 +86,7 @@ public class ClientHandler extends Thread {
 
 
         while (true) {
-            wr.write("Welchen Spitznamen moechtest du haben:");
+            wr.write("Welchen Spitznamen moechtest du haben:\n");
             wr.flush();
             String answer = br.readLine();
 

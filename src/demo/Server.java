@@ -39,12 +39,10 @@ public class Server {
             }
         }
 
-        messageAll(clientHandler, username + " hat den Raum betreten.");
         return true;
     }
 
     public void logout(ClientHandler client) {
-        messageAll(client, client.name + " hat den Raum verlassen.");
         try {
             client.closeConnection();
         } catch (IOException e) {
