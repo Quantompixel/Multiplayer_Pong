@@ -29,6 +29,9 @@ public class Game extends Thread {
      * @param player2 socket of player 2
      */
     public Game(int width, int height, Socket player1, Socket player2) {
+        this.width = width;
+        this.height = height;
+
         try {
             players.add(new Player(player1, this));
             players.add(new Player(player2, this));
@@ -60,6 +63,9 @@ public class Game extends Thread {
      * <p>
      * message format:
      * TYPE:param1=value,param2=value,param3=value,...
+     *
+     * INIT:width=350,height=100
+     * UPDATE:
      */
     @Override
     public void run() {
