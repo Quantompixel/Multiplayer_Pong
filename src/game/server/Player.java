@@ -9,6 +9,11 @@ public class Player extends Thread{
     BufferedReader in;
     PrintWriter out;
 
+    /**
+     * @param player
+     * @param parent
+     * @throws IOException
+     */
     public Player(Socket player, Game parent) throws IOException {
         this.player = player;
         this.game = parent;
@@ -27,5 +32,14 @@ public class Player extends Thread{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendMessage(String message) {
+        out.println(message);
+    }
+
+    public void closeConnection() throws IOException {
+        in.close();
+        out.close();
     }
 }
