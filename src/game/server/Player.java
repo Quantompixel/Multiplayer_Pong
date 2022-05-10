@@ -3,16 +3,16 @@ package game.server;
 import java.io.*;
 import java.net.Socket;
 
-public class Player extends Thread{
+public class Player extends Thread {
     Socket player;
     Game game;
     BufferedReader in;
     PrintWriter out;
 
     /**
-     * @param player
-     * @param parent
-     * @throws IOException
+     * @param player IPAddress and Port of the player
+     * @param parent the game that keeps track of the player
+     * @throws IOException exception can be thrown because of network errors
      */
     public Player(Socket player, Game parent) throws IOException {
         this.player = player;
@@ -27,7 +27,6 @@ public class Player extends Thread{
     @Override
     public void run() {
         try {
-            out.println("Connected");
             System.out.println(in.readLine());
         } catch (IOException e) {
             e.printStackTrace();

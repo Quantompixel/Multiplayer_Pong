@@ -1,24 +1,62 @@
 package game.client;
 
-import demo.client.ClientNetwork;
 import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.net.InetAddress;
 
+
 public class Main extends Application {
+    private static NetworkInterface network;
+    private static Canvas canvas;
 
     public static void main(String[] args) {
         try {
-            Networking client = new Networking(InetAddress.getLocalHost(), 12345);
+            InetAddress serverAddress = InetAddress.getLocalHost();
+            int port = 12345;
+
+            network = new NetworkInterface(serverAddress, port);
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+
         launch(args);
     }
 
     @Override
-    public void start(Stage primaryStage) {
+    public void start(Stage stage) {
+        stage.setTitle("PONG");
+        BorderPane borderPane = new BorderPane();
+        canvas = new Canvas(100, 100);
+        borderPane.setCenter(canvas);
 
+        stage.setResizable(true);
+        stage.setScene(new Scene(borderPane, 500, 500));
+        stage.show();
+    }
+
+    public static void initCanvas(int width, int height) {
+        canvas.setWidth(width);
+        canvas.setHeight(height);
+
+        /**
+         * For testing purposes only.
+         */
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        double w = canvas.getWidth();
+        double h = canvas.getHeight();
+
+        gc.setStroke(Color.BLUE);
+        gc.strokeLine(0, 0, w, h);
+
+        gc.setStroke(Color.rgb(255, 128, 128, 0.5));
+        gc.setLineWidth(8.5);
+        gc.strokeLine(0, h, w, 0);
     }
 }
