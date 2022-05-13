@@ -44,9 +44,25 @@ public class NetworkInterface extends Thread {
                         }
                         Main.initCanvas(width, height);
                     }
+                    case "UPDATE" -> {
+
+                        int x = -1;
+                        int y = -1;
+                        for (String param : params) {
+                            int value = Integer.parseInt(param.substring(param.indexOf('=') + 1));
+                            if (param.contains("x=")) {
+                                x = value;
+                            }
+                            if (param.contains("y=")) {
+                                y = value;
+                            }
+                        }
+
+                        Main.setBallX(x);
+                        Main.setBallY(y);
+                    }
                 }
-                System.out.println(type);
-                System.out.println(Arrays.toString(params));
+                System.out.println(type + " | " + Arrays.toString(params));
             }
         } catch (IOException e) {
             e.printStackTrace();

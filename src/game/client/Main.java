@@ -14,6 +14,8 @@ import java.net.InetAddress;
 public class Main extends Application {
     private static NetworkInterface network;
     private static Canvas canvas;
+    private static int ballX;
+    private static int ballY;
 
     public static void main(String[] args) {
         try {
@@ -44,8 +46,8 @@ public class Main extends Application {
         canvas.setWidth(width);
         canvas.setHeight(height);
 
-        /**
-         * For testing purposes only.
+        /*
+          For testing purposes only.
          */
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
@@ -58,5 +60,29 @@ public class Main extends Application {
         gc.setStroke(Color.rgb(255, 128, 128, 0.5));
         gc.setLineWidth(8.5);
         gc.strokeLine(0, h, w, 0);
+
+
+        new Thread(() -> {
+            while (true) {
+                gc.setFill(Color.WHITE);
+                gc.fillRect(0,0,width, height);
+                System.out.println(ballX + " : " + ballY);
+                gc.setFill(Color.BLUE);
+                gc.fillRect(ballX, ballY, 10, 10);
+                try {
+                    Thread.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public static void setBallX(int x) {
+        ballX = x;
+    }
+
+    public static void setBallY(int y) {
+        ballY = y;
     }
 }

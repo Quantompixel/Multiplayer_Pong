@@ -53,8 +53,19 @@ public class Game extends Thread {
         players.get(0).sendMessage("INIT:width=" + width + ",height=" + height);
         players.get(1).sendMessage("INIT:width=" + width + ",height=" + height);
 
+        int x = 0;
+        int y = 0;
         while (true) {
+            players.get(0).sendMessage("UPDATE:x=" + x + ",y=" + y);
+            players.get(1).sendMessage("UPDATE:x=" + x + ",y=" + y);
+            x += 3;
+            y += 1;
 
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
