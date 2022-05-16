@@ -17,7 +17,6 @@ public class NetworkInterface extends Thread {
         start();
     }
 
-
     @Override
     public void run() {
         try {
@@ -62,7 +61,7 @@ public class NetworkInterface extends Thread {
                         Main.setBallY(y);
                     }
                 }
-                System.out.println(type + " | " + Arrays.toString(params));
+                // System.out.println(type + " | " + Arrays.toString(params));
             }
         } catch (IOException e) {
             e.printStackTrace();

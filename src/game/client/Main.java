@@ -46,6 +46,7 @@ public class Main extends Application {
         canvas.setWidth(width);
         canvas.setHeight(height);
 
+
         /*
           For testing purposes only.
          */
@@ -54,26 +55,17 @@ public class Main extends Application {
         double w = canvas.getWidth();
         double h = canvas.getHeight();
 
-        gc.setStroke(Color.BLUE);
-        gc.strokeLine(0, 0, w, h);
-
-        gc.setStroke(Color.rgb(255, 128, 128, 0.5));
-        gc.setLineWidth(8.5);
-        gc.strokeLine(0, h, w, 0);
-
-
         new Thread(() -> {
             while (true) {
-                gc.setFill(Color.WHITE);
-                gc.fillRect(0,0,width, height);
-                System.out.println(ballX + " : " + ballY);
                 gc.setFill(Color.BLUE);
-                gc.fillRect(ballX, ballY, 10, 10);
+                gc.fillOval(ballX, ballY, 10, 10);
                 try {
                     Thread.sleep(5);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                gc.setFill(Color.rgb(255,255,255,0.1));
+                gc.fillRect(0,0,width, height);
             }
         }).start();
     }

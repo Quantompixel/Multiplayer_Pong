@@ -10,6 +10,10 @@ public class Game extends Thread {
     private int port;
     private int width;
     private int height;
+    private int ballX = 0;
+    private int ballY = 0;
+    private int speedX = 3;
+    private int speedY = 1;
 
     /**
      * @param width   width of the game window
@@ -53,19 +57,29 @@ public class Game extends Thread {
         players.get(0).sendMessage("INIT:width=" + width + ",height=" + height);
         players.get(1).sendMessage("INIT:width=" + width + ",height=" + height);
 
-        int x = 0;
-        int y = 0;
         while (true) {
-            players.get(0).sendMessage("UPDATE:x=" + x + ",y=" + y);
-            players.get(1).sendMessage("UPDATE:x=" + x + ",y=" + y);
-            x += 3;
-            y += 1;
+            players.get(0).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY);
+            players.get(1).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY);
+
+            update();
 
             try {
-                Thread.sleep(100);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void update () {
+        ballX += speedX;
+        ballY += speedY;
+
+        if (ballX + 20 >= width || ballX <= 0) {
+            speedX = -speedX;
+        }
+        if (ballY + 20 >= height || ballY <= 0) {
+            speedY = -speedY;
         }
     }
 }
