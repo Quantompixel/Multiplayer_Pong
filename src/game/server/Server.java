@@ -31,6 +31,6 @@ public class Server {
             }
         } while (players.size() < 2);
 
-        new Game(350, 350, players.get(0), players.get(1));
+        new Game(400, 350,20, players.get(0), players.get(1));
     }
 }

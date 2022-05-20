@@ -16,6 +16,7 @@ public class Main extends Application {
     private static Canvas canvas;
     private static int ballX;
     private static int ballY;
+    private static int ballSize = 10;
 
     public static void main(String[] args) {
         try {
@@ -57,8 +58,15 @@ public class Main extends Application {
 
         new Thread(() -> {
             while (true) {
+                gc.setStroke(Color.BLACK);
+                gc.setLineWidth(5);
+                gc.strokeLine(0,0,width,0);
+                gc.strokeLine(width,0,width,height);
+                gc.strokeLine(width,height, 0,height);
+                gc.strokeLine(0,height,0,0);
+
                 gc.setFill(Color.BLUE);
-                gc.fillOval(ballX, ballY, 10, 10);
+                gc.fillOval(ballX, ballY, ballSize, ballSize);
                 try {
                     Thread.sleep(5);
                 } catch (InterruptedException e) {
@@ -76,5 +84,9 @@ public class Main extends Application {
 
     public static void setBallY(int y) {
         ballY = y;
+    }
+
+    public static void setBallSize(int size) {
+        ballSize = size;
     }
 }

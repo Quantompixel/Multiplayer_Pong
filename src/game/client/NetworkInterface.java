@@ -32,6 +32,7 @@ public class NetworkInterface extends Thread {
                         // INIT:width=350,height=100
                         int width = -1;
                         int height = -1;
+                        int ballSize = -1;
                         for (String param : params) {
                             int value = Integer.parseInt(param.substring(param.indexOf('=') + 1));
                             if (param.contains("width=")) {
@@ -40,8 +41,13 @@ public class NetworkInterface extends Thread {
                             if (param.contains("height=")) {
                                 height = value;
                             }
+                            if (param.contains("ballSize=")) {
+                                ballSize = value;
+                            }
                         }
+                        System.out.println(width + " " + height + " " + ballSize);
                         Main.initCanvas(width, height);
+                        Main.setBallSize(ballSize);
                     }
                     case "UPDATE" -> {
 
