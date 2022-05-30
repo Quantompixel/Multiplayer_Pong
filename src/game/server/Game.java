@@ -10,23 +10,29 @@ public class Game extends Thread {
     private int port;
     private int width;
     private int height;
-    private int ballX = 0;
-    private int ballY = 0;
-    private int ballSize = 10;
-    private int speedX = 3;
-    private int speedY = 1;
+    private double ballX = 0;
+    private double ballY = 0;
+    private double speedX = 50; // in pixel/s
+    private double speedY = 30; // in pixel/s
+    private int ballSize;
+    private int updateInterval;
+    private int frameRateClient;
 
     /**
-     * @param width   width of the game window
-     * @param height  height of the game window
-     * @param ballSize defines the size of the ball
-     * @param player1 socket of player 1
-     * @param player2 socket of player 2
+     * @param width           width of the game window
+     * @param height          height of the game window
+     * @param ballSize        defines the size of the ball
+     * @param frameRateClient defines how often the gui gets redrawn on the client in ms
+     * @param updateInterval  defines how often the server sends updates to the client in ms
+     * @param player1         socket of player 1
+     * @param player2         socket of player 2
      */
-    public Game(int width, int height, int ballSize, Socket player1, Socket player2) {
+    public Game(int width, int height, int ballSize, int frameRateClient, int updateInterval, Socket player1, Socket player2) {
         this.width = width;
         this.height = height;
         this.ballSize = ballSize;
+        this.frameRateClient = frameRateClient;
+        this.updateInterval = updateInterval;
 
         try {
             players.add(new Player(player1, this));
@@ -57,17 +63,21 @@ public class Game extends Thread {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        players.get(0).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize);
-        players.get(1).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize);
+        players.get(0).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize + ",frameRate=" + frameRateClient);
+        players.get(1).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize + ",frameRate=" + frameRateClient);
 
         while (true) {
-            players.get(0).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY);
-            players.get(1).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY);
+            double f = (double) updateInterval / (double) frameRateClient;
+
+            players.get(0).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX / f + ",vy=" + speedY / f);
+            players.get(1).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX / f + ",vy=" + speedY / f);
+
+            System.out.println(speedX + " : " + speedY + " | " + f);
 
             update();
 
             try {
-                Thread.sleep(50);
+                Thread.sleep(updateInterval);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

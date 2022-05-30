@@ -14,10 +14,13 @@ import java.net.InetAddress;
 public class Main extends Application {
     private static NetworkInterface network;
     private static Canvas canvas;
-    private static int ballX;
-    private static int ballY;
+    private static double ballX;
+    private static double ballY;
+    private static double ballSpeedX;
+    private static double ballSpeedY;
     private static int ballSize = 10;
     private static boolean isStopped = false;
+    private static int frameRate = 10;
 
     public static void main(String[] args) {
         try {
@@ -68,14 +71,22 @@ public class Main extends Application {
                 gc.strokeLine(width,height, 0,height);
                 gc.strokeLine(0,height,0,0);
 
+                ballX += ballSpeedX;
+                ballY += ballSpeedY;
+
                 gc.setFill(Color.BLUE);
                 gc.fillOval(ballX, ballY, ballSize, ballSize);
                 try {
-                    Thread.sleep(5);
+                    Thread.sleep(frameRate);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                gc.setFill(Color.rgb(255,255,255,0.1));
+
+                /*
+                Trail-Effect
+                 */
+                // gc.setFill(Color.rgb(255,255,255,0.1));
+                gc.setFill(Color.rgb(255,255,255));
                 gc.fillRect(0,0,width, height);
             }
         }).start();
@@ -86,15 +97,27 @@ public class Main extends Application {
         network.closeConnection();
     }
 
-    public static void setBallX(int x) {
+    public static void setBallX(double x) {
         ballX = x;
     }
 
-    public static void setBallY(int y) {
+    public static void setBallY(double y) {
         ballY = y;
+    }
+
+    public static void setBallSpeedX(double ballSpeedX) {
+        Main.ballSpeedX = ballSpeedX;
+    }
+
+    public static void setBallSpeedY(double ballSpeedY) {
+        Main.ballSpeedY = ballSpeedY;
     }
 
     public static void setBallSize(int size) {
         ballSize = size;
+    }
+
+    public static void setFrameRate(int frameRate) {
+        Main.frameRate = frameRate;
     }
 }
