@@ -17,6 +17,7 @@ public class Main extends Application {
     private static int ballX;
     private static int ballY;
     private static int ballSize = 10;
+    private static boolean isStopped = false;
 
     public static void main(String[] args) {
         try {
@@ -41,6 +42,8 @@ public class Main extends Application {
         stage.setResizable(true);
         stage.setScene(new Scene(borderPane, 500, 500));
         stage.show();
+
+        stage.setOnCloseRequest(windowEvent -> quit());
     }
 
     public static void initCanvas(int width, int height) {
@@ -57,7 +60,7 @@ public class Main extends Application {
         double h = canvas.getHeight();
 
         new Thread(() -> {
-            while (true) {
+            while (!isStopped) {
                 gc.setStroke(Color.BLACK);
                 gc.setLineWidth(5);
                 gc.strokeLine(0,0,width,0);
@@ -76,6 +79,11 @@ public class Main extends Application {
                 gc.fillRect(0,0,width, height);
             }
         }).start();
+    }
+
+    public static void quit() {
+        isStopped = true;
+        network.closeConnection();
     }
 
     public static void setBallX(int x) {

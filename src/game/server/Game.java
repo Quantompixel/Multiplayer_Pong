@@ -12,18 +12,21 @@ public class Game extends Thread {
     private int height;
     private int ballX = 0;
     private int ballY = 0;
+    private int ballSize = 10;
     private int speedX = 3;
     private int speedY = 1;
 
     /**
      * @param width   width of the game window
      * @param height  height of the game window
+     * @param ballSize defines the size of the ball
      * @param player1 socket of player 1
      * @param player2 socket of player 2
      */
-    public Game(int width, int height, Socket player1, Socket player2) {
+    public Game(int width, int height, int ballSize, Socket player1, Socket player2) {
         this.width = width;
         this.height = height;
+        this.ballSize = ballSize;
 
         try {
             players.add(new Player(player1, this));
@@ -54,8 +57,8 @@ public class Game extends Thread {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        players.get(0).sendMessage("INIT:width=" + width + ",height=" + height);
-        players.get(1).sendMessage("INIT:width=" + width + ",height=" + height);
+        players.get(0).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize);
+        players.get(1).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize);
 
         while (true) {
             players.get(0).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY);
@@ -64,7 +67,7 @@ public class Game extends Thread {
             update();
 
             try {
-                Thread.sleep(20);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -75,10 +78,10 @@ public class Game extends Thread {
         ballX += speedX;
         ballY += speedY;
 
-        if (ballX + 20 >= width || ballX <= 0) {
+        if (ballX + ballSize >= width || ballX <= 0) {
             speedX = -speedX;
         }
-        if (ballY + 20 >= height || ballY <= 0) {
+        if (ballY + ballSize >= height || ballY <= 0) {
             speedY = -speedY;
         }
     }
