@@ -38,38 +38,56 @@ public class NetworkInterface extends Thread {
                         int width = -1;
                         int height = -1;
                         int ballSize = -1;
+                        int frameRate = -1;
                         for (String param : params) {
                             int value = Integer.parseInt(param.substring(param.indexOf('=') + 1));
-                            if (param.contains("width=")) {
+                            if (param.startsWith("width=")) {
                                 width = value;
                             }
-                            if (param.contains("height=")) {
+                            if (param.startsWith("height=")) {
                                 height = value;
                             }
-                            if (param.contains("ballSize=")) {
+                            if (param.startsWith("ballSize=")) {
                                 ballSize = value;
+                            }
+                            if (param.startsWith("frameRate=")) {
+                                frameRate = value;
                             }
                         }
                         System.out.println(width + " " + height + " " + ballSize);
                         Main.initCanvas(width, height);
                         Main.setBallSize(ballSize);
+                        Main.setFrameRate(frameRate);
                     }
                     case "UPDATE" -> {
 
-                        int x = -1;
-                        int y = -1;
+                        double x = -1;
+                        double y = -1;
+                        double vx = -1;
+                        double vy = -1;
                         for (String param : params) {
-                            int value = Integer.parseInt(param.substring(param.indexOf('=') + 1));
-                            if (param.contains("x=")) {
+                            double value = Double.parseDouble(param.substring(param.indexOf('=') + 1));
+                            if (param.startsWith("vx=")) {
+                                vx = value;
+                            }
+                            if (param.startsWith("vy=")) {
+                                vy = value;
+                            }
+                            if (param.startsWith("x=")) {
                                 x = value;
                             }
-                            if (param.contains("y=")) {
+                            if (param.startsWith("y=")) {
                                 y = value;
                             }
                         }
 
+                        System.out.println(message);
+                        System.out.println(x + " : " + y + " : "+ vx + " : "+ vy);
+
                         Main.setBallX(x);
                         Main.setBallY(y);
+                        Main.setBallSpeedX(vx);
+                        Main.setBallSpeedY(vy);
                     }
                 }
                 // System.out.println(type + " | " + Arrays.toString(params));
