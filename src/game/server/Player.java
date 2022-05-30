@@ -27,7 +27,14 @@ public class Player extends Thread {
     @Override
     public void run() {
         try {
-            System.out.println(in.readLine());
+            while (true) {
+                String message = in.readLine();
+                if (message.contains("QUIT")) {
+                    closeConnection();
+                    System.out.println(player + " disconnected");
+                    break;
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

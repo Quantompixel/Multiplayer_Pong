@@ -1,27 +1,32 @@
 package game.client;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
 
 public class NetworkInterface extends Thread {
-    Socket socket;
-    BufferedReader reader;
+    private Socket socket;
+    private BufferedReader reader;
+    private PrintWriter writer;
+    private boolean isDisconnected = false;
 
     public NetworkInterface(InetAddress serverAddress, int serverPort) throws Exception {
         this.socket = new Socket(serverAddress, serverPort);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
         start();
     }
 
     @Override
     public void run() {
         try {
-            while (true) {
+            while (!isDisconnected) {
                 String message = reader.readLine();
+
+                if (message == null) {
+                    break;
+                }
 
                 // TYPE:param1=value,param2=value
                 String type = message.substring(0, message.indexOf(':'));
@@ -69,8 +74,14 @@ public class NetworkInterface extends Thread {
                 }
                 // System.out.println(type + " | " + Arrays.toString(params));
             }
+            System.out.println("disconnected...");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void closeConnection() {
+        writer.println("QUIT");
+        isDisconnected = true;
     }
 }
