@@ -12,8 +12,8 @@ public class Game extends Thread {
     private int height;
     private double ballX = 0;
     private double ballY = 0;
-    private double speedX = 50; // in pixel/s
-    private double speedY = 30; // in pixel/s
+    private double speedX = 150; // in pixel/s
+    private double speedY = 100; // in pixel/s
     private int ballSize;
     private int updateInterval;
     private int frameRateClient;
@@ -67,12 +67,8 @@ public class Game extends Thread {
         players.get(1).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize + ",frameRate=" + frameRateClient);
 
         while (true) {
-            double f = (double) updateInterval / (double) frameRateClient;
-
-            players.get(0).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX / f + ",vy=" + speedY / f);
-            players.get(1).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX / f + ",vy=" + speedY / f);
-
-            System.out.println(speedX + " : " + speedY + " | " + f);
+            players.get(0).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
+            players.get(1).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
 
             update();
 
@@ -85,8 +81,13 @@ public class Game extends Thread {
     }
 
     private void update () {
-        ballX += speedX;
-        ballY += speedY;
+        /*
+         v = s / t
+         s = v * t
+         */
+
+        ballX += speedX * (double) updateInterval / 1000.0;
+        ballY += speedY * (double) updateInterval / 1000.0;
 
         if (ballX + ballSize >= width || ballX <= 0) {
             speedX = -speedX;

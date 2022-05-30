@@ -9,6 +9,8 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.net.InetAddress;
+import java.time.Duration;
+import java.time.Instant;
 
 
 public class Main extends Application {
@@ -63,7 +65,12 @@ public class Main extends Application {
         double h = canvas.getHeight();
 
         new Thread(() -> {
+            Duration deltaTime = Duration.ZERO;
+
             while (!isStopped) {
+                // time at the start of the loop
+                Instant beginTime = Instant.now();
+
                 gc.setStroke(Color.BLACK);
                 gc.setLineWidth(5);
                 gc.strokeLine(0,0,width,0);
@@ -71,8 +78,8 @@ public class Main extends Application {
                 gc.strokeLine(width,height, 0,height);
                 gc.strokeLine(0,height,0,0);
 
-                ballX += ballSpeedX;
-                ballY += ballSpeedY;
+                ballX += ballSpeedX * (double) deltaTime.toNanos() / 1000_000_000.0;
+                ballY += ballSpeedY * (double) deltaTime.toNanos() / 1000_000_000.0;
 
                 gc.setFill(Color.BLUE);
                 gc.fillOval(ballX, ballY, ballSize, ballSize);
@@ -88,6 +95,9 @@ public class Main extends Application {
                 // gc.setFill(Color.rgb(255,255,255,0.1));
                 gc.setFill(Color.rgb(255,255,255));
                 gc.fillRect(0,0,width, height);
+
+                // time it takes the loop to finish ONE iteration
+                deltaTime = Duration.between(beginTime, Instant.now());
             }
         }).start();
     }

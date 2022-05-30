@@ -81,9 +81,6 @@ public class NetworkInterface extends Thread {
                             }
                         }
 
-                        System.out.println(message);
-                        System.out.println(x + " : " + y + " : "+ vx + " : "+ vy);
-
                         Main.setBallX(x);
                         Main.setBallY(y);
                         Main.setBallSpeedX(vx);
