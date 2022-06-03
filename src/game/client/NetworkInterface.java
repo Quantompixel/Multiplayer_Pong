@@ -3,7 +3,6 @@ package game.client;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Arrays;
 
 public class NetworkInterface extends Thread {
     private Socket socket;
@@ -39,6 +38,7 @@ public class NetworkInterface extends Thread {
                         int height = -1;
                         int ballSize = -1;
                         int frameRate = -1;
+                        int paddleX = -1;
                         for (String param : params) {
                             int value = Integer.parseInt(param.substring(param.indexOf('=') + 1));
                             if (param.startsWith("width=")) {
@@ -50,6 +50,9 @@ public class NetworkInterface extends Thread {
                             if (param.startsWith("ballSize=")) {
                                 ballSize = value;
                             }
+                            if (param.startsWith("paddleX=")) {
+                                paddleX = value;
+                            }
                             if (param.startsWith("frameRate=")) {
                                 frameRate = value;
                             }
@@ -57,9 +60,10 @@ public class NetworkInterface extends Thread {
                         System.out.println(width + " " + height + " " + ballSize);
                         Main.initCanvas(width, height);
                         Main.setBallSize(ballSize);
+                        Main.setPaddleX(paddleX);
                         Main.setFrameRate(frameRate);
                     }
-                    case "UPDATE" -> {
+                    case "BALLUPDATE" -> {
 
                         double x = -1;
                         double y = -1;
@@ -93,6 +97,10 @@ public class NetworkInterface extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void sendPaddleUpdate(double paddleY) {
+        writer.println("PADDLEUPDATE:paddleY=" + paddleY);
     }
 
     public void closeConnection() {

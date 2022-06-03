@@ -2,6 +2,7 @@ package game.server;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Locale;
 
 public class Player extends Thread {
     Socket player;
@@ -9,6 +10,8 @@ public class Player extends Thread {
     boolean hasDisconnected = false;
     BufferedReader in;
     PrintWriter out;
+    private double positionX;
+    private double positionY;
 
     /**
      * @param player IPAddress and Port of the player
@@ -35,6 +38,10 @@ public class Player extends Thread {
                     System.out.println(player + " disconnected");
                     break;
                 }
+                if (message.startsWith("PADDLEUPDATE")) {
+                    String value = message.split("=")[1];
+                    positionY = Double.parseDouble(value);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -50,5 +57,17 @@ public class Player extends Thread {
         game.checkClientsConnected();
         in.close();
         out.close();
+    }
+
+    public double getPositionY() {
+        return positionY;
+    }
+
+    public void setPositionX(double paddleX) {
+        this.positionX = paddleX;
+    }
+
+    public double getPositionX() {
+        return positionX;
     }
 }

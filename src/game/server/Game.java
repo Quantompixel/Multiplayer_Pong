@@ -10,8 +10,8 @@ public class Game extends Thread {
     private int port;
     private int width;
     private int height;
-    private double ballX = 0;
-    private double ballY = 0;
+    private double ballX = 50;
+    private double ballY = 50;
     private double speedX = 150; // in pixel/s
     private double speedY = 100; // in pixel/s
     private int ballSize;
@@ -64,12 +64,15 @@ public class Game extends Thread {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        players.get(0).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize + ",frameRate=" + frameRateClient);
-        players.get(1).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize + ",frameRate=" + frameRateClient);
+        players.get(0).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize + ",frameRate=" + frameRateClient + ",paddleX=" + (width - 30));
+        players.get(1).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize + ",frameRate=" + frameRateClient + ",paddleX=" + 30);
+
+        players.get(0).setPositionX(width - 30);
+        players.get(1).setPositionX(30);
 
         while (isRunning) {
-            players.get(0).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
-            players.get(1).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
+            players.get(0).sendMessage("BALLUPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
+            players.get(1).sendMessage("BALLUPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
 
             update();
 
@@ -86,15 +89,33 @@ public class Game extends Thread {
          v = s / t
          s = v * t
          */
+        // handleCollision();
 
         ballX += speedX * (double) updateInterval / 1000.0;
         ballY += speedY * (double) updateInterval / 1000.0;
+
+        handleCollision();
+    }
+
+    public void handleCollision() {
+        /*
+        ATTENTIONE: hard code
+         */
+        int paddleHeight = 60;
+        int paddleWidth = 10;
 
         if (ballX + ballSize >= width || ballX <= 0) {
             speedX = -speedX;
         }
         if (ballY + ballSize >= height || ballY <= 0) {
             speedY = -speedY;
+        }
+
+        if (ballX + ballSize >= players.get(0).getPositionX() && ballY >= players.get(0).getPositionY() && ballY + ballSize <= players.get(0).getPositionY() + paddleHeight){
+            speedX = -speedX;
+        }
+        if (ballX <= players.get(1).getPositionX() + paddleWidth  && ballY >= players.get(1).getPositionY() && ballY + ballSize <= players.get(1).getPositionY() + paddleHeight){
+            speedX = -speedX;
         }
     }
 

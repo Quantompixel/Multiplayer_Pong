@@ -21,14 +21,14 @@ public class Main extends Application {
     private static Canvas canvas;
     private static double ballX;
     private static double ballY;
-    private static double paddleY;
-    private static double paddleSpeed = 5;
     private static double ballSpeedX;
     private static double ballSpeedY;
+    private static double paddleX;
+    private static double paddleY;
+    private static double paddleSpeed = 5;
+    private static double paddleHeight = 60;
     private static int ballSize = 10;
     private static boolean isStopped = false;
-    private static boolean upIsPressed = false;
-    private static boolean downIsPressed = false;
     private static int frameRate = 10;
     private static GraphicsContext gc;
 
@@ -60,10 +60,14 @@ public class Main extends Application {
 
         stage.addEventHandler(KeyEvent.KEY_PRESSED, (key) -> {
             if (key.getCode() == KeyCode.UP || key.getCode() == KeyCode.W || key.getCode() == KeyCode.K) {
-                paddleY -= paddleSpeed;
+                if (paddleY <= 0) paddleY = 0;
+                else paddleY -= paddleSpeed;
+                network.sendPaddleUpdate(paddleY);
             }
             else if (key.getCode() == KeyCode.DOWN || key.getCode() == KeyCode.S || key.getCode() == KeyCode.J) {
-                paddleY += paddleSpeed;
+                if (paddleY + paddleHeight >= canvas.getHeight()) paddleY = canvas.getHeight() - paddleHeight;
+                else paddleY += paddleSpeed;
+                network.sendPaddleUpdate(paddleY);
             }
         });
     }
@@ -76,9 +80,6 @@ public class Main extends Application {
           For testing purposes only.
          */
         gc = canvas.getGraphicsContext2D();
-
-        double w = canvas.getWidth();
-        double h = canvas.getHeight();
 
         new Thread(() -> {
 
@@ -102,7 +103,7 @@ public class Main extends Application {
 
                 // Paddle
                 gc.setFill(Color.GREEN);
-                gc.fillRect(canvas.getWidth() - 30, paddleY, 10, 30);
+                gc.fillRect(paddleX, paddleY, 10, paddleHeight);
 
                 try {
                     Thread.sleep(frameRate);
@@ -116,9 +117,6 @@ public class Main extends Application {
                 // gc.setFill(Color.rgb(255,255,255,0.1));
                 gc.setFill(Color.rgb(255,255,255));
                 gc.fillRect(0,0,width, height);
-
-                upIsPressed = false;
-                downIsPressed = false;
 
                 // time it takes the loop to finish ONE iteration
                 deltaTime = Duration.between(beginTime, Instant.now());
@@ -153,5 +151,9 @@ public class Main extends Application {
 
     public static void setFrameRate(int frameRate) {
         Main.frameRate = frameRate;
+    }
+
+    public static void setPaddleX(double paddleX) {
+        Main.paddleX = paddleX;
     }
 }
