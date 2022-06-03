@@ -6,6 +6,7 @@ import java.net.Socket;
 public class Player extends Thread {
     Socket player;
     Game game;
+    boolean hasDisconnected = false;
     BufferedReader in;
     PrintWriter out;
 
@@ -45,6 +46,8 @@ public class Player extends Thread {
     }
 
     public void closeConnection() throws IOException {
+        hasDisconnected = true;
+        game.checkClientsConnected();
         in.close();
         out.close();
     }

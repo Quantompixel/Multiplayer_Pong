@@ -17,6 +17,7 @@ public class Game extends Thread {
     private int ballSize;
     private int updateInterval;
     private int frameRateClient;
+    private boolean isRunning = true;
 
     /**
      * @param width           width of the game window
@@ -66,7 +67,7 @@ public class Game extends Thread {
         players.get(0).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize + ",frameRate=" + frameRateClient);
         players.get(1).sendMessage("INIT:width=" + width + ",height=" + height + ",ballSize=" + ballSize + ",frameRate=" + frameRateClient);
 
-        while (true) {
+        while (isRunning) {
             players.get(0).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
             players.get(1).sendMessage("UPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
 
@@ -95,5 +96,14 @@ public class Game extends Thread {
         if (ballY + ballSize >= height || ballY <= 0) {
             speedY = -speedY;
         }
+    }
+
+    public void checkClientsConnected() {
+        for (Player player : players) {
+            if (!player.hasDisconnected) return;
+        }
+
+        //stop game thread
+        isRunning = false;
     }
 }
