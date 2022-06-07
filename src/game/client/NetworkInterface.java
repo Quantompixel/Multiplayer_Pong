@@ -37,6 +37,8 @@ public class NetworkInterface extends Thread {
                         int width = -1;
                         int height = -1;
                         int ballSize = -1;
+                        int paddleHeight = -1;
+                        int paddleWidth = -1;
                         int frameRate = -1;
                         int paddleX = -1;
                         for (String param : params) {
@@ -50,18 +52,22 @@ public class NetworkInterface extends Thread {
                             if (param.startsWith("ballSize=")) {
                                 ballSize = value;
                             }
+                            if (param.startsWith("paddleHeight=")) {
+                                paddleHeight = value;
+                            }
+                            if (param.startsWith("paddleWidth=")) {
+                                paddleWidth = value;
+                            }
                             if (param.startsWith("paddleX=")) {
                                 paddleX = value;
-                            }
-                            if (param.startsWith("frameRate=")) {
-                                frameRate = value;
                             }
                         }
                         System.out.println(width + " " + height + " " + ballSize);
                         Main.initCanvas(width, height);
                         Main.setBallSize(ballSize);
                         Main.setPaddleX(paddleX);
-                        Main.setFrameRate(frameRate);
+                        Main.setPaddleHeight(paddleHeight);
+                        Main.setPaddleWidth(paddleWidth);
                     }
                     case "BALLUPDATE" -> {
 

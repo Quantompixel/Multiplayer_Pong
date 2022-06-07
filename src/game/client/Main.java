@@ -26,7 +26,8 @@ public class Main extends Application {
     private static double paddleX;
     private static double paddleY;
     private static double paddleSpeed = 5;
-    private static double paddleHeight = 60;
+    private static double paddleHeight;
+    private static double paddleWidth;
     private static int ballSize = 10;
     private static boolean isStopped = false;
     private static int frameRate = 10;
@@ -63,8 +64,7 @@ public class Main extends Application {
                 if (paddleY <= 0) paddleY = 0;
                 else paddleY -= paddleSpeed;
                 network.sendPaddleUpdate(paddleY);
-            }
-            else if (key.getCode() == KeyCode.DOWN || key.getCode() == KeyCode.S || key.getCode() == KeyCode.J) {
+            } else if (key.getCode() == KeyCode.DOWN || key.getCode() == KeyCode.S || key.getCode() == KeyCode.J) {
                 if (paddleY + paddleHeight >= canvas.getHeight()) paddleY = canvas.getHeight() - paddleHeight;
                 else paddleY += paddleSpeed;
                 network.sendPaddleUpdate(paddleY);
@@ -94,7 +94,7 @@ public class Main extends Application {
 
                 // Text
                 gc.setFill(Color.BLACK);
-                gc.setFont(Font.font(Font.getFamilies().get(0),20));
+                gc.setFont(Font.font(Font.getFamilies().get(0), 20));
                 gc.fillText(String.format("%5.2f : %5.2f", ballX, ballY), 100, 100);
 
                 // Ball
@@ -103,7 +103,7 @@ public class Main extends Application {
 
                 // Paddle
                 gc.setFill(Color.GREEN);
-                gc.fillRect(paddleX, paddleY, 10, paddleHeight);
+                gc.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
 
                 try {
                     Thread.sleep(frameRate);
@@ -115,8 +115,8 @@ public class Main extends Application {
                 Trail-Effect
                  */
                 // gc.setFill(Color.rgb(255,255,255,0.1));
-                gc.setFill(Color.rgb(255,255,255));
-                gc.fillRect(0,0,width, height);
+                gc.setFill(Color.rgb(255, 255, 255));
+                gc.fillRect(0, 0, width, height);
 
                 // time it takes the loop to finish ONE iteration
                 deltaTime = Duration.between(beginTime, Instant.now());
@@ -147,6 +147,14 @@ public class Main extends Application {
 
     public static void setBallSize(int size) {
         ballSize = size;
+    }
+
+    public static void setPaddleHeight(int paddleHeight) {
+        Main.paddleHeight = paddleHeight;
+    }
+
+    public static void setPaddleWidth(int paddleWidth) {
+        Main.paddleWidth = paddleWidth;
     }
 
     public static void setFrameRate(int frameRate) {
