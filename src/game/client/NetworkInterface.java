@@ -39,7 +39,6 @@ public class NetworkInterface extends Thread {
                         int ballSize = -1;
                         int paddleHeight = -1;
                         int paddleWidth = -1;
-                        int frameRate = -1;
                         int paddleX = -1;
                         for (String param : params) {
                             int value = Integer.parseInt(param.substring(param.indexOf('=') + 1));
@@ -62,7 +61,6 @@ public class NetworkInterface extends Thread {
                                 paddleX = value;
                             }
                         }
-                        System.out.println(width + " " + height + " " + ballSize);
                         Main.initCanvas(width, height);
                         Main.setBallSize(ballSize);
                         Main.setPaddleX(paddleX);

@@ -13,9 +13,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-import java.time.Duration;
-import java.time.Instant;
-
 public class AnimationTimerTest extends Application {
     private static Canvas canvas;
 
@@ -48,7 +45,7 @@ public class AnimationTimerTest extends Application {
                 long deltaTime = now - lastUpdate;
 
                 gc.setFill(Color.WHITE);
-                // gc.fillRect(0,0, canvas.getWidth(), canvas.getHeight());
+                gc.fillRect(0,0, canvas.getWidth(), canvas.getHeight());
 
                 gc.setFill(Color.BLACK);
                 gc.fillRect(x,y,10,10);
@@ -63,15 +60,8 @@ public class AnimationTimerTest extends Application {
                 x += speedX * elapsedSeconds;
                 y += speedY * elapsedSeconds;
 
-                // System.out.println(deltaTime);
-                // System.out.println(String.format("%5.2f : %5.2f", x, y));
-                // System.out.println();
-
-                // System.out.println((double) deltaTime / 1_000_000_000.0);
-
                 if (x <= 0 || x + 10 >= canvas.getWidth()) speedX = -speedX;
                 if (y <= 0 || y + 10 >= canvas.getHeight()) speedY = -speedY;
-
 
                 lastUpdate = now;
             }

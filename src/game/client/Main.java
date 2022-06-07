@@ -16,6 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
@@ -37,13 +38,12 @@ public class Main extends Application {
     private static int scorePlayer;
     private static int scoreEnemy;
     private static int ballSize = 10;
-    private static boolean isStopped = false;
-    private static int frameRate = 10;
-    private static GraphicsContext gc;
+    private static AnimationTimer timer;
 
     public static void main(String[] args) {
         try {
-            InetAddress serverAddress = InetAddress.getLocalHost();
+            // InetAddress serverAddress = InetAddress.getLocalHost();
+            InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
             int port = 12345;
 
             network = new NetworkInterface(serverAddress, port);
@@ -85,11 +85,7 @@ public class Main extends Application {
         canvas.setWidth(width);
         canvas.setHeight(height);
 
-        /*
-          For testing purposes only.
-         */
-
-        AnimationTimer timer = new AnimationTimer() {
+        timer = new AnimationTimer() {
             GraphicsContext gc = canvas.getGraphicsContext2D();
             long lastUpdate;
 
@@ -97,7 +93,6 @@ public class Main extends Application {
             public void handle(long now) {
                 long deltaTime = now - lastUpdate;
 
-                if (deltaTime > 99_999_999 ) System.out.println(deltaTime);
                 double elapsedSeconds = deltaTime > 99_999_999 ? 0.04 : deltaTime / 1_000_000_000.0;
 
                 ballX += ballSpeedX * elapsedSeconds;
@@ -132,7 +127,7 @@ public class Main extends Application {
     }
 
     public static void quit() {
-        isStopped = true;
+        timer.stop();
         network.closeConnection();
     }
 
