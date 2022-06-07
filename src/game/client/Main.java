@@ -1,5 +1,6 @@
 package game.client;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -87,18 +88,23 @@ public class Main extends Application {
         /*
           For testing purposes only.
          */
-        gc = canvas.getGraphicsContext2D();
 
-        new Thread(() -> {
+        AnimationTimer timer = new AnimationTimer() {
+            GraphicsContext gc = canvas.getGraphicsContext2D();
+            long lastUpdate;
 
-            Duration deltaTime = Duration.ZERO;
+            @Override
+            public void handle(long now) {
+                long deltaTime = now - lastUpdate;
 
-            while (!isStopped) {
-                // time at the start of the loop
-                Instant beginTime = Instant.now();
+                if (deltaTime > 99_999_999 ) System.out.println(deltaTime);
+                double elapsedSeconds = deltaTime > 99_999_999 ? 0.04 : deltaTime / 1_000_000_000.0;
 
-                ballX += ballSpeedX * (double) deltaTime.toNanos() / 1_000_000_000.0;
-                ballY += ballSpeedY * (double) deltaTime.toNanos() / 1_000_000_000.0;
+                ballX += ballSpeedX * elapsedSeconds;
+                ballY += ballSpeedY * elapsedSeconds;
+
+                gc.setFill(Color.WHITE);
+                gc.fillRect(0,0, canvas.getWidth(), canvas.getHeight());
 
                 // Text
                 gc.setFill(Color.BLACK);
@@ -118,23 +124,11 @@ public class Main extends Application {
                 gc.setFill(Color.RED);
                 gc.fillRect(Math.abs(width - paddleX), enemyPaddleY, paddleWidth, paddleHeight);
 
-                try {
-                    Thread.sleep(frameRate);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                /*
-                Trail-Effect
-                 */
-                // gc.setFill(Color.rgb(255,255,255,0.1));
-                gc.setFill(Color.rgb(255, 255, 255));
-                gc.fillRect(0, 0, width, height);
-
-                // time it takes the loop to finish ONE iteration
-                deltaTime = Duration.between(beginTime, Instant.now());
+                lastUpdate = now;
             }
-        }).start();
+        };
+
+        timer.start();
     }
 
     public static void quit() {
