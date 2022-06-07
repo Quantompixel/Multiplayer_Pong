@@ -43,6 +43,8 @@ public class Player extends Thread {
                 if (message.startsWith("PADDLEUPDATE")) {
                     String value = message.split("=")[1];
                     positionY = Double.parseDouble(value);
+
+                    game.sendPaddleUpdate(positionY, this);
                 }
             }
         } catch (IOException e) {

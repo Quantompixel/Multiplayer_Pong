@@ -28,6 +28,7 @@ public class Main extends Application {
     private static double paddleSpeed = 5;
     private static double paddleHeight;
     private static double paddleWidth;
+    private static double enemyPaddleY;
     private static int ballSize = 10;
     private static boolean isStopped = false;
     private static int frameRate = 10;
@@ -101,9 +102,12 @@ public class Main extends Application {
                 gc.setFill(Color.BLUE);
                 gc.fillOval(ballX, ballY, ballSize, ballSize);
 
-                // Paddle
+                // Paddles
                 gc.setFill(Color.GREEN);
                 gc.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
+                // Enemy Player
+                gc.setFill(Color.RED);
+                gc.fillRect(Math.abs(width - paddleX), enemyPaddleY, paddleWidth, paddleHeight);
 
                 try {
                     Thread.sleep(frameRate);
@@ -157,8 +161,8 @@ public class Main extends Application {
         Main.paddleWidth = paddleWidth;
     }
 
-    public static void setFrameRate(int frameRate) {
-        Main.frameRate = frameRate;
+    public static void setEnemyPaddleY(double paddleY) {
+        Main.enemyPaddleY = paddleY;
     }
 
     public static void setPaddleX(double paddleX) {

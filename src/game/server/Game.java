@@ -12,7 +12,7 @@ public class Game extends Thread {
     private double ballX = 50;
     private double ballY = 100;
     private double speedX = 200; // in pixel/s
-    private double speedY = 0; // in pixel/s
+    private double speedY = 50; // in pixel/s
     private int paddleHeight;
     private int paddleWidth;
     private int ballSize;
@@ -124,6 +124,11 @@ public class Game extends Thread {
         if (ballX <= playerRight.getPositionX() + paddleWidth && ballY + ballSize >= playerRight.getPositionY() && ballY <= playerRight.getPositionY() + paddleHeight) {
             speedX = -speedX;
         }
+    }
+
+    public void sendPaddleUpdate(double position, Player sender) {
+        if (sender.equals(playerLeft)) playerRight.sendMessage("PADDLEUPDATE:paddleY=" + position);
+        else playerLeft.sendMessage("PADDLEUPDATE:paddleY=" + position);
     }
 
     public void checkClientsConnected() {

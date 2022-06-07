@@ -96,6 +96,11 @@ public class NetworkInterface extends Thread {
                         Main.setBallSpeedX(vx);
                         Main.setBallSpeedY(vy);
                     }
+
+                    case "PADDLEUPDATE" -> {
+                        String enemY = message.split("=")[1];
+                        Main.setEnemyPaddleY(Double.parseDouble(enemY));
+                    }
                 }
                 // System.out.println(type + " | " + Arrays.toString(params));
             }
