@@ -28,7 +28,7 @@ public class NetworkInterface extends Thread {
                 }
 
                 // TYPE:param1=value,param2=value
-                String type = message.substring(0, message.indexOf(':'));
+                String type = message.indexOf(':') == -1 ? "ERROR" : message.substring(0, message.indexOf(':'));
                 String[] params = message.substring(message.indexOf(':') + 1).split(",");
 
                 switch (type) {
@@ -101,6 +101,20 @@ public class NetworkInterface extends Thread {
                         String enemY = message.split("=")[1];
                         Main.setEnemyPaddleY(Double.parseDouble(enemY));
                     }
+
+                    case "SCOREUPDATE" -> {
+                        for (String param : params) {
+                            int value = Integer.parseInt(param.substring(param.indexOf('=') + 1));
+                            if (param.startsWith("player")) {
+                                Main.setScorePlayer(value);
+                            }
+                            if (param.startsWith("enemy")) {
+                                Main.setScoreEnemy(value);
+                            }
+                        }
+                    }
+
+                    case "ERROR" -> System.out.println("Wrong message format: " + message);
                 }
                 // System.out.println(type + " | " + Arrays.toString(params));
             }

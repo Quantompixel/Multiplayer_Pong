@@ -6,6 +6,8 @@ import java.net.Socket;
 public class Game extends Thread {
     private Player playerLeft;
     private Player playerRight;
+    private long scoreLeft;
+    private long scoreRight;
     private int port;
     private int width;
     private int height;
@@ -20,14 +22,14 @@ public class Game extends Thread {
     private boolean isRunning = true;
 
     /**
-     * @param width           width of the game window
-     * @param height          height of the game window
-     * @param ballSize        defines the size of the ball
-     * @param paddleHeight    defines the height of the paddle controlled by the players
-     * @param paddleWidth     defines the width of the paddle controlled by the players
-     * @param updateInterval  defines how often the server sends updates to the client in ms
-     * @param player1         socket of player 1
-     * @param player2         socket of player 2
+     * @param width          width of the game window
+     * @param height         height of the game window
+     * @param ballSize       defines the size of the ball
+     * @param paddleHeight   defines the height of the paddle controlled by the players
+     * @param paddleWidth    defines the width of the paddle controlled by the players
+     * @param updateInterval defines how often the server sends updates to the client in ms
+     * @param player1        socket of player 1
+     * @param player2        socket of player 2
      */
     public Game(int width, int height, int ballSize, int paddleHeight, int paddleWidth, int updateInterval, Socket player1, Socket player2) {
         this.width = width;
@@ -106,18 +108,40 @@ public class Game extends Thread {
         ballX += speedX * (double) updateInterval / 1000.0;
         ballY += speedY * (double) updateInterval / 1000.0;
 
+        checkScoring();
         handleCollision();
     }
 
+    private void checkScoring() {
+        if (ballX - ballSize < 0) {
+            scoreRight++;
+        } else if (ballX + ballSize > width) {
+            scoreLeft++;
+        } else {
+            return;
+        }
+
+        ballX = width / 2;
+        ballY = height / 2;
+        playerRight.sendMessage("SCOREUPDATE:enemy=" + scoreLeft + ",player=" + scoreRight);
+        playerLeft.sendMessage("SCOREUPDATE:player=" + scoreLeft + ",enemy=" + scoreRight);
+    }
+
     public void handleCollision() {
+        /*
+        Wall Collision:
 
         if (ballX + ballSize >= width || ballX <= 0) {
             speedX = -speedX;
         }
+         */
+
+        // bottom collision
         if (ballY + ballSize >= height || ballY <= 0) {
             speedY = -speedY;
         }
 
+        // paddle collision
         if (ballX + ballSize >= playerLeft.getPositionX() && ballY + ballSize >= playerLeft.getPositionY() && ballY <= playerLeft.getPositionY() + paddleHeight) {
             speedX = -speedX;
         }

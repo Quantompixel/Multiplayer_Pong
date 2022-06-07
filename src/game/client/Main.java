@@ -1,12 +1,16 @@
 package game.client;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -29,6 +33,8 @@ public class Main extends Application {
     private static double paddleHeight;
     private static double paddleWidth;
     private static double enemyPaddleY;
+    private static int scorePlayer;
+    private static int scoreEnemy;
     private static int ballSize = 10;
     private static boolean isStopped = false;
     private static int frameRate = 10;
@@ -51,11 +57,12 @@ public class Main extends Application {
     public void start(Stage stage) {
         stage.setTitle("PONG");
         BorderPane borderPane = new BorderPane();
+        borderPane.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY, CornerRadii.EMPTY, Insets.EMPTY)));
         canvas = new Canvas(100, 100);
         borderPane.setCenter(canvas);
 
         stage.setResizable(true);
-        stage.setScene(new Scene(borderPane, 500, 500));
+        stage.setScene(new Scene(borderPane, 700, 500));
         stage.show();
 
         stage.setOnCloseRequest(windowEvent -> quit());
@@ -97,15 +104,17 @@ public class Main extends Application {
                 gc.setFill(Color.BLACK);
                 gc.setFont(Font.font(Font.getFamilies().get(0), 20));
                 gc.fillText(String.format("%5.2f : %5.2f", ballX, ballY), 100, 100);
+                gc.fillText(scoreEnemy + " : " + scorePlayer, width/2, height/2);
 
                 // Ball
                 gc.setFill(Color.BLUE);
                 gc.fillOval(ballX, ballY, ballSize, ballSize);
 
                 // Paddles
+                    // You
                 gc.setFill(Color.GREEN);
                 gc.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
-                // Enemy Player
+                    // Enemy Player
                 gc.setFill(Color.RED);
                 gc.fillRect(Math.abs(width - paddleX), enemyPaddleY, paddleWidth, paddleHeight);
 
@@ -151,6 +160,14 @@ public class Main extends Application {
 
     public static void setBallSize(int size) {
         ballSize = size;
+    }
+
+    public static void setScorePlayer(int score) {
+        scorePlayer = score;
+    }
+
+    public static void setScoreEnemy(int score) {
+        scoreEnemy = score;
     }
 
     public static void setPaddleHeight(int paddleHeight) {
