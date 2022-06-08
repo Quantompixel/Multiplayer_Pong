@@ -103,11 +103,11 @@ public class NetworkInterface extends Thread {
                     case "SCOREUPDATE" -> {
                         for (String param : params) {
                             int value = Integer.parseInt(param.substring(param.indexOf('=') + 1));
-                            if (param.startsWith("player")) {
-                                Main.setScorePlayer(value);
+                            if (param.startsWith("left")) {
+                                Main.setScoreLeft(value);
                             }
-                            if (param.startsWith("enemy")) {
-                                Main.setScoreEnemy(value);
+                            if (param.startsWith("right")) {
+                                Main.setScoreRight(value);
                             }
                         }
                     }

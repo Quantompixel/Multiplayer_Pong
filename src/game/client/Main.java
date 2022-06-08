@@ -14,12 +14,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.time.Duration;
-import java.time.Instant;
 
 
 public class Main extends Application {
@@ -35,8 +34,8 @@ public class Main extends Application {
     private static double paddleHeight;
     private static double paddleWidth;
     private static double enemyPaddleY;
-    private static int scorePlayer;
-    private static int scoreEnemy;
+    private static int scoreLeft;
+    private static int scoreRight;
     private static int ballSize = 10;
     private static AnimationTimer timer;
 
@@ -93,7 +92,7 @@ public class Main extends Application {
             public void handle(long now) {
                 long deltaTime = now - lastUpdate;
 
-                double elapsedSeconds = deltaTime > 99_999_999 ? 0.04 : deltaTime / 1_000_000_000.0;
+                double elapsedSeconds = deltaTime > 99_999_999 ? 0.04 : deltaTime / 1e9;
 
                 ballX += ballSpeedX * elapsedSeconds;
                 ballY += ballSpeedY * elapsedSeconds;
@@ -102,10 +101,10 @@ public class Main extends Application {
                 gc.fillRect(0,0, canvas.getWidth(), canvas.getHeight());
 
                 // Text
-                gc.setFill(Color.BLACK);
-                gc.setFont(Font.font(Font.getFamilies().get(0), 20));
-                gc.fillText(String.format("%5.2f : %5.2f", ballX, ballY), 100, 100);
-                gc.fillText(scoreEnemy + " : " + scorePlayer, width/2, height/2);
+                gc.setFill(Color.GRAY);
+                gc.setFont(Font.font("sans serif", FontWeight.BOLD, 48));
+                gc.setTextAlign(TextAlignment.CENTER);
+                gc.fillText(scoreLeft + " : " + scoreRight, width/2, 55);
 
                 // Ball
                 gc.setFill(Color.BLUE);
@@ -151,12 +150,12 @@ public class Main extends Application {
         ballSize = size;
     }
 
-    public static void setScorePlayer(int score) {
-        scorePlayer = score;
+    public static void setScoreLeft(int score) {
+        scoreLeft = score;
     }
 
-    public static void setScoreEnemy(int score) {
-        scoreEnemy = score;
+    public static void setScoreRight(int score) {
+        scoreRight = score;
     }
 
     public static void setPaddleHeight(int paddleHeight) {

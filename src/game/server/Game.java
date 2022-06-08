@@ -123,8 +123,8 @@ public class Game extends Thread {
 
         ballX = width / 2;
         ballY = height / 2;
-        playerRight.sendMessage("SCOREUPDATE:enemy=" + scoreLeft + ",player=" + scoreRight);
-        playerLeft.sendMessage("SCOREUPDATE:player=" + scoreLeft + ",enemy=" + scoreRight);
+        playerRight.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
+        playerLeft.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
     }
 
     public void handleCollision() {

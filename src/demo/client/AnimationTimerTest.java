@@ -11,6 +11,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class AnimationTimerTest extends Application {
@@ -37,12 +38,12 @@ public class AnimationTimerTest extends Application {
             double y =  2;
             double speedX = 200;
             double speedY = 50;
-            long lastUpdate;
+            long lastFrameTime;
             GraphicsContext gc = canvas.getGraphicsContext2D();
 
             @Override
             public void handle(long now) {
-                long deltaTime = now - lastUpdate;
+                long deltaTime = now - lastFrameTime;
 
                 gc.setFill(Color.WHITE);
                 gc.fillRect(0,0, canvas.getWidth(), canvas.getHeight());
@@ -51,7 +52,7 @@ public class AnimationTimerTest extends Application {
                 gc.fillRect(x,y,10,10);
 
                 if (deltaTime > 99_999_999 ) System.out.println(deltaTime);
-                double elapsedSeconds = deltaTime > 99_999_999 ? 0.04 : deltaTime / 1_000_000_000.0;
+                double elapsedSeconds = deltaTime > 99_999_999 ? 0.04 : deltaTime / 1e9;
 
                 if (elapsedSeconds >= 0.03) {
                     System.out.println(elapsedSeconds);
@@ -60,10 +61,18 @@ public class AnimationTimerTest extends Application {
                 x += speedX * elapsedSeconds;
                 y += speedY * elapsedSeconds;
 
+                double frameRate = 1d / deltaTime;
+                int fps = (int)(frameRate * 1e9);
+
+                // Text
+                gc.setFill(Color.BLACK);
+                gc.setFont(Font.font(Font.getFamilies().get(0), 20));
+                gc.fillText(String.format("%d20", fps), canvas.getWidth()/2, 20);
+
                 if (x <= 0 || x + 10 >= canvas.getWidth()) speedX = -speedX;
                 if (y <= 0 || y + 10 >= canvas.getHeight()) speedY = -speedY;
 
-                lastUpdate = now;
+                lastFrameTime = now;
             }
         };
 
