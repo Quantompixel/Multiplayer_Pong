@@ -39,15 +39,19 @@ public class Main extends Application {
     private static int ballSize = 10;
     private static AnimationTimer timer;
 
-    public static void main(String[] args) {
-        try {
-            // InetAddress serverAddress = InetAddress.getLocalHost();
-            InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
-            int port = 12345;
+    public static void main(String[] args) throws InterruptedException {
+        while (true) {
+            try {
+                // InetAddress serverAddress = InetAddress.getLocalHost();
+                InetAddress serverAddress = InetAddress.getByName("localhost");
+                int port = 12345;
 
-            network = new NetworkInterface(serverAddress, port);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+                network = new NetworkInterface(serverAddress, port);
+                break;
+            } catch (Exception e) {
+                System.out.println("Verbindungsfehler");
+                Thread.sleep(100);
+            }
         }
 
         launch(args);
