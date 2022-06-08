@@ -30,7 +30,7 @@ public class Main extends Application {
     private static double ballSpeedY;
     private static double paddleX;
     private static double paddleY;
-    private static double paddleSpeed = 5;
+    private static double paddleSpeed;
     private static double paddleHeight;
     private static double paddleWidth;
     private static double enemyPaddleY;
@@ -42,7 +42,6 @@ public class Main extends Application {
     public static void main(String[] args) throws InterruptedException {
         while (true) {
             try {
-                // InetAddress serverAddress = InetAddress.getLocalHost();
                 InetAddress serverAddress = InetAddress.getByName("localhost");
                 int port = 12345;
 
@@ -89,7 +88,7 @@ public class Main extends Application {
         canvas.setHeight(height);
 
         timer = new AnimationTimer() {
-            GraphicsContext gc = canvas.getGraphicsContext2D();
+            final GraphicsContext GC = canvas.getGraphicsContext2D();
             long lastUpdate;
 
             @Override
@@ -101,26 +100,26 @@ public class Main extends Application {
                 ballX += ballSpeedX * elapsedSeconds;
                 ballY += ballSpeedY * elapsedSeconds;
 
-                gc.setFill(Color.WHITE);
-                gc.fillRect(0,0, canvas.getWidth(), canvas.getHeight());
+                GC.setFill(Color.WHITE);
+                GC.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
                 // Text
-                gc.setFill(Color.GRAY);
-                gc.setFont(Font.font("sans serif", FontWeight.BOLD, 48));
-                gc.setTextAlign(TextAlignment.CENTER);
-                gc.fillText(scoreLeft + " : " + scoreRight, width/2, 55);
+                GC.setFill(Color.GRAY);
+                GC.setFont(Font.font("sans serif", FontWeight.BOLD, 48));
+                GC.setTextAlign(TextAlignment.CENTER);
+                GC.fillText(scoreLeft + " : " + scoreRight, width / 2.0, 55);
 
                 // Ball
-                gc.setFill(Color.BLUE);
-                gc.fillOval(ballX, ballY, ballSize, ballSize);
+                GC.setFill(Color.BLUE);
+                GC.fillOval(ballX, ballY, ballSize, ballSize);
 
                 // Paddles
-                    // You
-                gc.setFill(Color.GREEN);
-                gc.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
-                    // Enemy Player
-                gc.setFill(Color.RED);
-                gc.fillRect(Math.abs(width - paddleX), enemyPaddleY, paddleWidth, paddleHeight);
+                // You
+                GC.setFill(Color.GREEN);
+                GC.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
+                // Enemy Player
+                GC.setFill(Color.RED);
+                GC.fillRect(Math.abs(width - paddleX), enemyPaddleY, paddleWidth, paddleHeight);
 
                 lastUpdate = now;
             }
@@ -168,6 +167,10 @@ public class Main extends Application {
 
     public static void setPaddleWidth(int paddleWidth) {
         Main.paddleWidth = paddleWidth;
+    }
+
+    public static void setPaddleSpeed(int paddleSpeed) {
+        Main.paddleSpeed = paddleSpeed;
     }
 
     public static void setEnemyPaddleY(double paddleY) {

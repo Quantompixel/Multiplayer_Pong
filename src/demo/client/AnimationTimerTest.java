@@ -2,10 +2,12 @@ package demo.client;
 
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -14,7 +16,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class AnimationTimerTest extends Application {
+public class AnimationTimerTest extends Application implements EventHandler<KeyEvent> {
     private static Canvas canvas;
 
     public static void main(String[] args) {
@@ -34,24 +36,24 @@ public class AnimationTimerTest extends Application {
         stage.show();
 
         AnimationTimer timer = new AnimationTimer() {
-            double x =  2;
-            double y =  2;
+            double x = 2;
+            double y = 2;
             double speedX = 200;
             double speedY = 50;
             long lastFrameTime;
-            GraphicsContext gc = canvas.getGraphicsContext2D();
+            final GraphicsContext GC = canvas.getGraphicsContext2D();
 
             @Override
             public void handle(long now) {
                 long deltaTime = now - lastFrameTime;
 
-                gc.setFill(Color.WHITE);
-                gc.fillRect(0,0, canvas.getWidth(), canvas.getHeight());
+                GC.setFill(Color.WHITE);
+                GC.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-                gc.setFill(Color.BLACK);
-                gc.fillRect(x,y,10,10);
+                GC.setFill(Color.BLACK);
+                GC.fillRect(x, y, 10, 10);
 
-                if (deltaTime > 99_999_999 ) System.out.println(deltaTime);
+                if (deltaTime > 99_999_999) System.out.println(deltaTime);
                 double elapsedSeconds = deltaTime > 99_999_999 ? 0.04 : deltaTime / 1e9;
 
                 if (elapsedSeconds >= 0.03) {
@@ -62,12 +64,12 @@ public class AnimationTimerTest extends Application {
                 y += speedY * elapsedSeconds;
 
                 double frameRate = 1d / deltaTime;
-                int fps = (int)(frameRate * 1e9);
+                int fps = (int) (frameRate * 1e9);
 
                 // Text
-                gc.setFill(Color.BLACK);
-                gc.setFont(Font.font(Font.getFamilies().get(0), 20));
-                gc.fillText(String.format("%d20", fps), canvas.getWidth()/2, 20);
+                GC.setFill(Color.BLACK);
+                GC.setFont(Font.font(Font.getFamilies().get(0), 20));
+                GC.fillText(String.format("%d20", fps), canvas.getWidth() / 2, 20);
 
                 if (x <= 0 || x + 10 >= canvas.getWidth()) speedX = -speedX;
                 if (y <= 0 || y + 10 >= canvas.getHeight()) speedY = -speedY;
@@ -78,5 +80,10 @@ public class AnimationTimerTest extends Application {
 
         // start();
         timer.start();
+    }
+
+    @Override
+    public void handle(KeyEvent event) {
+        System.out.println("hallo");
     }
 }

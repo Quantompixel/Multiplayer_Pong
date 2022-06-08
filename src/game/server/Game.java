@@ -4,22 +4,24 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class Game extends Thread {
+    private final int WIDTH;
+    private final int HEIGHT;
+    private final double DEFAULT_SPEED = 260;
+    private final int PADDLE_HEIGHT;
+    private final int PADDLE_WIDTH;
+    private final int PADDLE_SPEED;
+    private final int BALL_SIZE;
+    private final int UPDATE_INTERVAL;
+
     private Player playerLeft;
     private Player playerRight;
     private long scoreLeft;
     private long scoreRight;
     private int port;
-    private int width;
-    private int height;
-    private double ballX = 50;
-    private double ballY = 100;
+    private double ballX;
+    private double ballY;
     private double speedX = 250; // in pixel/s
     private double speedY = 70; // in pixel/s
-    private double defaultSpeed = 260;
-    private int paddleHeight;
-    private int paddleWidth;
-    private int ballSize;
-    private int updateInterval;
     private boolean isRunning = true;
 
     /**
@@ -32,13 +34,14 @@ public class Game extends Thread {
      * @param player1        socket of player 1
      * @param player2        socket of player 2
      */
-    public Game(int width, int height, int ballSize, int paddleHeight, int paddleWidth, int updateInterval, Socket player1, Socket player2) {
-        this.width = width;
-        this.height = height;
-        this.ballSize = ballSize;
-        this.paddleHeight = paddleHeight;
-        this.paddleWidth = paddleWidth;
-        this.updateInterval = updateInterval;
+    public Game(int width, int height, int ballSize, int paddleHeight, int paddleWidth, int paddleSpeed, int updateInterval, Socket player1, Socket player2) {
+        this.WIDTH = width;
+        this.HEIGHT = height;
+        this.BALL_SIZE = ballSize;
+        this.PADDLE_HEIGHT = paddleHeight;
+        this.PADDLE_WIDTH = paddleWidth;
+        this.UPDATE_INTERVAL = updateInterval;
+        this.PADDLE_SPEED = paddleSpeed;
 
         try {
             playerLeft = new Player(player1, this);
@@ -52,12 +55,16 @@ public class Game extends Thread {
 
     /**
      * Runs the game.
-     * <p>
-     * message format:
+     *
+     * <p>message format:</p>
+     * <pre>
      * TYPE:param1=value,param2=value,param3=value,...
-     * <p>
+     * </pre>
+     * <p>examples:</p>
+     * <pre>
      * INIT:width=350,height=100
-     * UPDATE:
+     * UPDATE:x=1,y=2
+     * </pre>
      */
     @Override
     public void run() {
@@ -69,30 +76,23 @@ public class Game extends Thread {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        playerLeft.sendMessage("INIT:width=" + width
-                + ",height=" + height
-                + ",ballSize=" + ballSize
-                + ",paddleHeight=" + paddleHeight
-                + ",paddleWidth=" + paddleWidth
-                + ",paddleX=" + (width - 30));
-        playerRight.sendMessage("INIT:width=" + width
-                + ",height=" + height
-                + ",ballSize=" + ballSize
-                + ",paddleHeight=" + paddleHeight
-                + ",paddleWidth=" + paddleWidth
-                + ",paddleX=" + 30);
 
-        playerLeft.setPositionX(width - 30);
+        playerLeft.sendMessage("INIT:width=" + WIDTH + ",height=" + HEIGHT + ",ballSize=" + BALL_SIZE + ",paddleHeight=" + PADDLE_HEIGHT + ",paddleWidth=" + PADDLE_WIDTH + ",paddleSpeed=" + PADDLE_SPEED + ",paddleX=" + (WIDTH - 30));
+        playerRight.sendMessage("INIT:width=" + WIDTH + ",height=" + HEIGHT + ",ballSize=" + BALL_SIZE + ",paddleHeight=" + PADDLE_HEIGHT + ",paddleWidth=" + PADDLE_WIDTH + ",paddleSpeed=" + PADDLE_SPEED + ",paddleX=" + 30);
+
+        playerLeft.setPositionX(WIDTH - 30);
         playerRight.setPositionX(30);
 
+        resetBallPosition();
+        setRandomAngle(Math.random() * 2 * Math.PI, DEFAULT_SPEED);
+
         while (isRunning) {
-            playerLeft.sendMessage("BALLUPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
-            playerRight.sendMessage("BALLUPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
+            sendBallUpdate(playerLeft, playerRight);
 
             update();
 
             try {
-                Thread.sleep(updateInterval);
+                Thread.sleep(UPDATE_INTERVAL);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -104,40 +104,52 @@ public class Game extends Thread {
          v = s / t
          s = v * t
          */
-        // handleCollision();
 
-        ballX += speedX * (double) updateInterval / 1000.0;
-        ballY += speedY * (double) updateInterval / 1000.0;
+        ballX += speedX * (double) UPDATE_INTERVAL / 1000.0;
+        ballY += speedY * (double) UPDATE_INTERVAL / 1000.0;
 
         checkScoring();
         handleCollision();
     }
 
     private void checkScoring() {
-        if (ballX - ballSize < 0) {
+        if (ballX + BALL_SIZE < 0) {
             scoreRight++;
-        } else if (ballX + ballSize > width) {
+        } else if (ballX > WIDTH) {
             scoreLeft++;
         } else {
             return;
         }
 
         // SCORED
-        ballX = width / 2;
-        ballY = height / 2;
-
-        setSpeedsFromAngle(Math.random() * Math.PI * 2);
+        resetBallPosition();
+        speedX = 0;
+        speedY = 0;
+        sendBallUpdate(playerLeft, playerRight);
 
         playerRight.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
         playerLeft.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        setRandomAngle(Math.random() * Math.PI * 2, DEFAULT_SPEED);
     }
 
-    public void setSpeedsFromAngle(double angle) {
-        speedX = Math.cos(angle) * defaultSpeed;
-        speedY = Math.sin(angle) * defaultSpeed;
+    private void resetBallPosition() {
+        ballX = WIDTH / 2.0 - BALL_SIZE / 2.0;
+        ballY = HEIGHT / 2.0 - BALL_SIZE / 2.0;
     }
 
-    public void handleCollision() {
+    private void setRandomAngle(double angle, double speed) {
+        speedX = Math.cos(angle) * speed;
+        speedY = Math.sin(angle) * speed;
+    }
+
+    private void handleCollision() {
         /*
         Wall Collision:
 
@@ -147,18 +159,24 @@ public class Game extends Thread {
          */
 
         // bottom collision
-        if (ballY + ballSize >= height || ballY <= 0) {
+        if (ballY + BALL_SIZE >= HEIGHT || ballY <= 0) {
             speedY = -speedY;
         }
 
         // paddle collision
-        if (ballX + ballSize >= playerLeft.getPositionX() && ballY + ballSize >= playerLeft.getPositionY() && ballY <= playerLeft.getPositionY() + paddleHeight) {
+        if (ballX + BALL_SIZE >= playerLeft.getPositionX() && ballY + BALL_SIZE >= playerLeft.getPositionY() && ballY <= playerLeft.getPositionY() + PADDLE_HEIGHT) {
             speedX = -speedX;
             speedX *= 1.02;
         }
-        if (ballX <= playerRight.getPositionX() + paddleWidth && ballY + ballSize >= playerRight.getPositionY() && ballY <= playerRight.getPositionY() + paddleHeight) {
+        if (ballX <= playerRight.getPositionX() + PADDLE_WIDTH && ballY + BALL_SIZE >= playerRight.getPositionY() && ballY <= playerRight.getPositionY() + PADDLE_HEIGHT) {
             speedX = -speedX;
             speedX *= 1.02;
+        }
+    }
+
+    private void sendBallUpdate(Player... players) {
+        for (Player player : players) {
+            player.sendMessage("BALLUPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
         }
     }
 
@@ -171,8 +189,7 @@ public class Game extends Thread {
         if (playerLeft.hasDisconnected && playerRight.hasDisconnected) {
             //stop game thread
             isRunning = false;
+            System.out.println("Stopping Game ...");
         }
-
-        System.out.println("Stopping Game ...");
     }
 }

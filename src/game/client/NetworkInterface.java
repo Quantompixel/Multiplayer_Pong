@@ -5,15 +5,15 @@ import java.net.InetAddress;
 import java.net.Socket;
 
 public class NetworkInterface extends Thread {
-    private Socket socket;
-    private BufferedReader reader;
-    private PrintWriter writer;
+    private final Socket SOCKET;
+    private final BufferedReader READER;
+    private final PrintWriter WRITER;
     private boolean isDisconnected = false;
 
     public NetworkInterface(InetAddress serverAddress, int serverPort) throws Exception {
-        this.socket = new Socket(serverAddress, serverPort);
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+        this.SOCKET = new Socket(serverAddress, serverPort);
+        READER = new BufferedReader(new InputStreamReader(SOCKET.getInputStream()));
+        WRITER = new PrintWriter(new OutputStreamWriter(SOCKET.getOutputStream()), true);
         start();
     }
 
@@ -21,7 +21,7 @@ public class NetworkInterface extends Thread {
     public void run() {
         try {
             while (!isDisconnected) {
-                String message = reader.readLine();
+                String message = READER.readLine();
 
                 if (message == null) {
                     break;
@@ -39,6 +39,7 @@ public class NetworkInterface extends Thread {
                         int ballSize = -1;
                         int paddleHeight = -1;
                         int paddleWidth = -1;
+                        int paddleSpeed = -1;
                         int paddleX = -1;
                         for (String param : params) {
                             int value = Integer.parseInt(param.substring(param.indexOf('=') + 1));
@@ -57,6 +58,9 @@ public class NetworkInterface extends Thread {
                             if (param.startsWith("paddleWidth=")) {
                                 paddleWidth = value;
                             }
+                            if (param.startsWith("paddleSpeed=")) {
+                                paddleSpeed = value;
+                            }
                             if (param.startsWith("paddleX=")) {
                                 paddleX = value;
                             }
@@ -66,6 +70,7 @@ public class NetworkInterface extends Thread {
                         Main.setPaddleX(paddleX);
                         Main.setPaddleHeight(paddleHeight);
                         Main.setPaddleWidth(paddleWidth);
+                        Main.setPaddleSpeed(paddleSpeed);
                     }
                     case "BALLUPDATE" -> {
 
@@ -123,11 +128,11 @@ public class NetworkInterface extends Thread {
     }
 
     public void sendPaddleUpdate(double paddleY) {
-        writer.println("PADDLEUPDATE:paddleY=" + paddleY);
+        WRITER.println("PADDLEUPDATE:paddleY=" + paddleY);
     }
 
     public void closeConnection() {
-        writer.println("QUIT");
+        WRITER.println("QUIT");
         isDisconnected = true;
     }
 }
