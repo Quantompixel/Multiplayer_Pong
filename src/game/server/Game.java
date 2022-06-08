@@ -13,8 +13,9 @@ public class Game extends Thread {
     private int height;
     private double ballX = 50;
     private double ballY = 100;
-    private double speedX = 200; // in pixel/s
-    private double speedY = 50; // in pixel/s
+    private double speedX = 250; // in pixel/s
+    private double speedY = 70; // in pixel/s
+    private double defaultSpeed = 260;
     private int paddleHeight;
     private int paddleWidth;
     private int ballSize;
@@ -121,10 +122,19 @@ public class Game extends Thread {
             return;
         }
 
+        // SCORED
         ballX = width / 2;
         ballY = height / 2;
+
+        setSpeedsFromAngle(Math.random() * Math.PI * 2);
+
         playerRight.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
         playerLeft.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
+    }
+
+    public void setSpeedsFromAngle(double angle) {
+        speedX = Math.cos(angle) * defaultSpeed;
+        speedY = Math.sin(angle) * defaultSpeed;
     }
 
     public void handleCollision() {
@@ -144,9 +154,11 @@ public class Game extends Thread {
         // paddle collision
         if (ballX + ballSize >= playerLeft.getPositionX() && ballY + ballSize >= playerLeft.getPositionY() && ballY <= playerLeft.getPositionY() + paddleHeight) {
             speedX = -speedX;
+            speedX *= 1.02;
         }
         if (ballX <= playerRight.getPositionX() + paddleWidth && ballY + ballSize >= playerRight.getPositionY() && ballY <= playerRight.getPositionY() + paddleHeight) {
             speedX = -speedX;
+            speedX *= 1.02;
         }
     }
 
