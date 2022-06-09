@@ -78,6 +78,7 @@ public class NetworkInterface extends Thread {
                         double y = -1;
                         double vx = -1;
                         double vy = -1;
+                        long time = -1;
                         for (String param : params) {
                             double value = Double.parseDouble(param.substring(param.indexOf('=') + 1));
                             if (param.startsWith("vx=")) {
@@ -92,7 +93,12 @@ public class NetworkInterface extends Thread {
                             if (param.startsWith("y=")) {
                                 y = value;
                             }
+                            if (param.startsWith("time=")) {
+                                time = (long) value;
+                            }
                         }
+
+                        System.out.println(time - System.nanoTime());
 
                         Main.setBallX(x);
                         Main.setBallY(y);

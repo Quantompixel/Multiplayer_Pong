@@ -6,7 +6,7 @@ import java.net.Socket;
 public class Game extends Thread {
     private final int WIDTH;
     private final int HEIGHT;
-    private final double DEFAULT_SPEED = 260;
+    private final double DEFAULT_SPEED = 300;
     private final int PADDLE_HEIGHT;
     private final int PADDLE_WIDTH;
     private final int PADDLE_SPEED;
@@ -70,12 +70,8 @@ public class Game extends Thread {
     public void run() {
         System.out.println("Starting Game ...");
 
-        try {
-            // Waits for 100ms so that the Client has enough time to start
-            Thread.sleep(100);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        // Waits for 100ms so that the Client has enough time to start
+        sleep(100);
 
         playerRight.sendMessage("INIT:width=" + WIDTH
                 + ",height=" + HEIGHT
@@ -96,6 +92,12 @@ public class Game extends Thread {
         playerLeft.setPositionX(30);
 
         resetBallPosition();
+        speedX = 0;
+        speedY = 0;
+        sendBallUpdate(playerLeft, playerRight);
+
+        sleep(2000);
+
         setRandomAngle(Math.random() * 2 * Math.PI, DEFAULT_SPEED);
 
         while (isRunning) {
@@ -103,11 +105,7 @@ public class Game extends Thread {
 
             update();
 
-            try {
-                Thread.sleep(UPDATE_INTERVAL);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            sleep(UPDATE_INTERVAL);
         }
     }
 
@@ -142,11 +140,7 @@ public class Game extends Thread {
         playerLeft.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
         playerRight.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        sleep(1000);
 
         setRandomAngle(Math.random() * Math.PI * 2, DEFAULT_SPEED);
     }
@@ -182,7 +176,15 @@ public class Game extends Thread {
 
     private void sendBallUpdate(Player... players) {
         for (Player player : players) {
-            player.sendMessage("BALLUPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY);
+            player.sendMessage("BALLUPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY + ",time=" + System.nanoTime());
+        }
+    }
+
+    private void sleep(int sleepTime) {
+        try {
+            Thread.sleep(sleepTime);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
