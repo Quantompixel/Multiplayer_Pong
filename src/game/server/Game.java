@@ -13,8 +13,8 @@ public class Game extends Thread {
     private final int BALL_SIZE;
     private final int UPDATE_INTERVAL;
 
-    private Player playerLeft;
     private Player playerRight;
+    private Player playerLeft;
     private long scoreLeft;
     private long scoreRight;
     private int port;
@@ -44,8 +44,8 @@ public class Game extends Thread {
         this.PADDLE_SPEED = paddleSpeed;
 
         try {
-            playerLeft = new Player(player1, this);
-            playerRight = new Player(player2, this);
+            playerRight = new Player(player1, this);
+            playerLeft = new Player(player2, this);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,17 +77,29 @@ public class Game extends Thread {
             throw new RuntimeException(e);
         }
 
-        playerLeft.sendMessage("INIT:width=" + WIDTH + ",height=" + HEIGHT + ",ballSize=" + BALL_SIZE + ",paddleHeight=" + PADDLE_HEIGHT + ",paddleWidth=" + PADDLE_WIDTH + ",paddleSpeed=" + PADDLE_SPEED + ",paddleX=" + (WIDTH - 30));
-        playerRight.sendMessage("INIT:width=" + WIDTH + ",height=" + HEIGHT + ",ballSize=" + BALL_SIZE + ",paddleHeight=" + PADDLE_HEIGHT + ",paddleWidth=" + PADDLE_WIDTH + ",paddleSpeed=" + PADDLE_SPEED + ",paddleX=" + 30);
+        playerRight.sendMessage("INIT:width=" + WIDTH
+                + ",height=" + HEIGHT
+                + ",ballSize=" + BALL_SIZE
+                + ",paddleHeight=" + PADDLE_HEIGHT
+                + ",paddleWidth=" + PADDLE_WIDTH
+                + ",paddleSpeed=" + PADDLE_SPEED
+                + ",paddleX=" + (WIDTH - 30));
+        playerLeft.sendMessage("INIT:width=" + WIDTH
+                + ",height=" + HEIGHT
+                + ",ballSize=" + BALL_SIZE
+                + ",paddleHeight=" + PADDLE_HEIGHT
+                + ",paddleWidth=" + PADDLE_WIDTH
+                + ",paddleSpeed=" + PADDLE_SPEED
+                + ",paddleX=" + (30));
 
-        playerLeft.setPositionX(WIDTH - 30);
-        playerRight.setPositionX(30);
+        playerRight.setPositionX(WIDTH - 30);
+        playerLeft.setPositionX(30);
 
         resetBallPosition();
         setRandomAngle(Math.random() * 2 * Math.PI, DEFAULT_SPEED);
 
         while (isRunning) {
-            sendBallUpdate(playerLeft, playerRight);
+            sendBallUpdate(playerRight, playerLeft);
 
             update();
 
@@ -125,10 +137,10 @@ public class Game extends Thread {
         resetBallPosition();
         speedX = 0;
         speedY = 0;
-        sendBallUpdate(playerLeft, playerRight);
+        sendBallUpdate(playerRight, playerLeft);
 
-        playerRight.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
         playerLeft.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
+        playerRight.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
 
         try {
             Thread.sleep(1000);
@@ -150,25 +162,19 @@ public class Game extends Thread {
     }
 
     private void handleCollision() {
-        /*
-        Wall Collision:
+        // Wall Collision:
 
-        if (ballX + ballSize >= width || ballX <= 0) {
-            speedX = -speedX;
-        }
-         */
-
-        // bottom collision
+            // bottom collision
         if (ballY + BALL_SIZE >= HEIGHT || ballY <= 0) {
             speedY = -speedY;
         }
 
-        // paddle collision
-        if (ballX + BALL_SIZE >= playerLeft.getPositionX() && ballY + BALL_SIZE >= playerLeft.getPositionY() && ballY <= playerLeft.getPositionY() + PADDLE_HEIGHT) {
+            // paddle collision
+        if (ballX + BALL_SIZE >= playerRight.getPositionX() && ballY + BALL_SIZE >= playerRight.getPositionY() && ballY <= playerRight.getPositionY() + PADDLE_HEIGHT) {
             speedX = -speedX;
             speedX *= 1.02;
         }
-        if (ballX <= playerRight.getPositionX() + PADDLE_WIDTH && ballY + BALL_SIZE >= playerRight.getPositionY() && ballY <= playerRight.getPositionY() + PADDLE_HEIGHT) {
+        if (ballX <= playerLeft.getPositionX() + PADDLE_WIDTH && ballY + BALL_SIZE >= playerLeft.getPositionY() && ballY <= playerLeft.getPositionY() + PADDLE_HEIGHT) {
             speedX = -speedX;
             speedX *= 1.02;
         }
@@ -181,12 +187,12 @@ public class Game extends Thread {
     }
 
     public void sendPaddleUpdate(double position, Player sender) {
-        if (sender.equals(playerLeft)) playerRight.sendMessage("PADDLEUPDATE:paddleY=" + position);
-        else playerLeft.sendMessage("PADDLEUPDATE:paddleY=" + position);
+        if (sender.equals(playerRight)) playerLeft.sendMessage("PADDLEUPDATE:paddleY=" + position);
+        else playerRight.sendMessage("PADDLEUPDATE:paddleY=" + position);
     }
 
     public void checkClientsConnected() {
-        if (playerLeft.hasDisconnected && playerRight.hasDisconnected) {
+        if (playerRight.hasDisconnected && playerLeft.hasDisconnected) {
             //stop game thread
             isRunning = false;
             System.out.println("Stopping Game ...");
