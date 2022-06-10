@@ -7,8 +7,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class Player extends Thread {
-    Socket player;
-    Game game;
+    final Socket PLAYER;
+    final Game GAME;
     boolean hasDisconnected = false;
     BufferedReader in;
     PrintWriter out;
@@ -21,8 +21,8 @@ public class Player extends Thread {
      * @throws IOException exception can be thrown because of network errors
      */
     public Player(Socket player, Game parent) throws IOException {
-        this.player = player;
-        this.game = parent;
+        this.PLAYER = player;
+        this.GAME = parent;
 
         in = new BufferedReader(new InputStreamReader(player.getInputStream()));
         out = new PrintWriter(player.getOutputStream(), true);
@@ -37,14 +37,14 @@ public class Player extends Thread {
                 String message = in.readLine();
                 if (message.contains("QUIT")) {
                     closeConnection();
-                    System.out.println(player + " disconnected");
+                    System.out.println(PLAYER + " disconnected");
                     break;
                 }
-                if (message.startsWith("PADDLEUPDATE")) {
+                if (message.startsWith("PADDLE-UPDATE")) {
                     String value = message.split("=")[1];
                     positionY = Double.parseDouble(value);
 
-                    game.sendPaddleUpdate(positionY, this);
+                    GAME.sendPaddleUpdate(positionY, this);
                 }
             }
         } catch (IOException e) {
@@ -58,7 +58,7 @@ public class Player extends Thread {
 
     public void closeConnection() throws IOException {
         hasDisconnected = true;
-        game.checkClientsConnected();
+        GAME.checkClientsConnected();
         in.close();
         out.close();
     }

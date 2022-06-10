@@ -44,13 +44,13 @@ public class Main extends Application {
     public static void main(String[] args) throws InterruptedException {
         while (true) {
             try {
-                InetAddress serverAddress = InetAddress.getByName("localhost");
+                InetAddress serverAddress = InetAddress.getByName("10.0.0.32");
                 int port = 12345;
 
                 network = new NetworkInterface(serverAddress, port);
                 break;
             } catch (Exception e) {
-                System.out.println("Verbindungsfehler");
+                System.out.println("Connection Error");
                 Thread.sleep(100);
             }
         }
