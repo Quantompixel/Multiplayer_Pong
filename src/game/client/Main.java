@@ -22,6 +22,8 @@ import java.util.List;
 
 
 public class Main extends Application {
+    private static final int UPDATE_INTERVAL = 10;
+
     private static NetworkInterface network;
     private static Canvas canvas;
     private static double ballX;
@@ -36,15 +38,16 @@ public class Main extends Application {
     private static double enemyPaddleY;
     private static int scoreLeft;
     private static int scoreRight;
-    private static int ballSize = 10;
+    private static int ballSize;
     private static AnimationTimer timer;
+    private static boolean isRunning = false;
 
     private static final List<String> INPUT = new ArrayList<>();
 
     public static void main(String[] args) throws InterruptedException {
         while (true) {
             try {
-                InetAddress serverAddress = InetAddress.getByName("10.0.0.32");
+                InetAddress serverAddress = InetAddress.getByName("localhost");
                 int port = 12345;
 
                 network = new NetworkInterface(serverAddress, port);
@@ -78,6 +81,7 @@ public class Main extends Application {
                     String code = event.getCode().toString();
                     if (!INPUT.contains(code)) {
                         INPUT.add(code);
+                        network.sendPaddleUpdate(paddleY);
                     }
                 }
         );
@@ -86,6 +90,7 @@ public class Main extends Application {
                 event -> {
                     String code = event.getCode().toString();
                     INPUT.remove(code);
+                    network.sendPaddleUpdate(paddleY);
                 }
         );
     }
@@ -93,6 +98,13 @@ public class Main extends Application {
     public static void initCanvas(int width, int height) {
         canvas.setWidth(width);
         canvas.setHeight(height);
+
+        startUpdater();
+        isRunning = true;
+        run();
+    }
+
+    private static void run() {
 
         timer = new AnimationTimer() {
             final GraphicsContext GC = canvas.getGraphicsContext2D();
@@ -107,12 +119,10 @@ public class Main extends Application {
                 if (INPUT.contains("UP") || INPUT.contains("W") || INPUT.contains("K")) {
                     if (paddleY <= 0) paddleY = 0;
                     else paddleY -= paddleSpeed * elapsedSeconds;
-                    network.sendPaddleUpdate(paddleY);
                 }
                 if (INPUT.contains("DOWN") || INPUT.contains("S") || INPUT.contains("J")) {
                     if (paddleY + paddleHeight >= canvas.getHeight()) paddleY = canvas.getHeight() - paddleHeight;
                     else paddleY += paddleSpeed * elapsedSeconds;
-                    network.sendPaddleUpdate(paddleY);
                 }
 
                 ballX += ballSpeedX * elapsedSeconds;
@@ -125,7 +135,7 @@ public class Main extends Application {
                 GC.setFill(Color.GRAY);
                 GC.setFont(Font.font("sans serif", FontWeight.BOLD, 48));
                 GC.setTextAlign(TextAlignment.CENTER);
-                GC.fillText(scoreLeft + " : " + scoreRight, width / 2.0, 55);
+                GC.fillText(scoreLeft + " : " + scoreRight, canvas.getWidth() / 2.0, 55);
 
                 // Ball
                 GC.setFill(Color.BLUE);
@@ -137,7 +147,7 @@ public class Main extends Application {
                 GC.fillRect(paddleX, paddleY, paddleWidth, paddleHeight);
                 // Enemy Player
                 GC.setFill(Color.RED);
-                GC.fillRect(Math.abs(width - paddleX), enemyPaddleY, paddleWidth, paddleHeight);
+                GC.fillRect(Math.abs(canvas.getWidth() - paddleX), enemyPaddleY, paddleWidth, paddleHeight);
 
                 lastUpdate = now;
             }
@@ -146,9 +156,24 @@ public class Main extends Application {
         timer.start();
     }
 
-    public static void quit() {
+    private static void quit() {
+        isRunning = false;
         timer.stop();
         network.closeConnection();
+    }
+
+    private static void startUpdater() {
+        new Thread(() -> {
+            while (isRunning) {
+                System.out.println("sent update");
+                network.sendPaddleUpdate(paddleY);
+                try {
+                    Thread.sleep(UPDATE_INTERVAL);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
     }
 
     public static void setBallX(double x) {

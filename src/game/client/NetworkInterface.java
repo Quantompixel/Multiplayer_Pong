@@ -98,8 +98,6 @@ public class NetworkInterface extends Thread {
                             }
                         }
 
-                        System.out.println(time - System.nanoTime());
-
                         Main.setBallX(x);
                         Main.setBallY(y);
                         Main.setBallSpeedX(vx);
