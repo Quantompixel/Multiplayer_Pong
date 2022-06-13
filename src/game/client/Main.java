@@ -146,6 +146,25 @@ public class Main extends Application {
         timer.start();
     }
 
+    private static void drawGameOverScreen() {
+        final GraphicsContext GC = canvas.getGraphicsContext2D();
+
+        GC.setFill(Color.WHITE);
+        GC.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+
+        GC.setFill(Color.GRAY);
+        GC.setFont(Font.font("sans serif", FontWeight.BOLD, 32));
+        GC.setTextAlign(TextAlignment.CENTER);
+        GC.fillText("GAME OVER", canvas.getWidth() / 2.0, canvas.getHeight() / 2.0 - 40);
+        GC.fillText(scoreLeft + " : " + scoreRight, canvas.getWidth() / 2.0, canvas.getHeight() / 2.0);
+
+        if (paddleX < canvas.getWidth() / 2.0) GC.fillText(scoreLeft > scoreRight ? "Gewonnen!" : "Verloren!", canvas.getWidth() / 2.0, canvas.getHeight() / 2.0 + 40);
+        else GC.fillText(scoreRight > scoreLeft ? "Gewonnen!" : "Verloren!", canvas.getWidth() / 2.0, canvas.getHeight() / 2.0 + 40);
+
+        quit();
+    }
+
     public static void quit() {
         timer.stop();
         network.closeConnection();
@@ -173,10 +192,18 @@ public class Main extends Application {
 
     public static void setScoreLeft(int score) {
         scoreLeft = score;
+        if (scoreRight == 5 || scoreLeft == 5) {
+            drawGameOverScreen();
+            return;
+        }
     }
 
     public static void setScoreRight(int score) {
         scoreRight = score;
+        if (scoreRight == 5 || scoreLeft == 5) {
+            drawGameOverScreen();
+            return;
+        }
     }
 
     public static void setPaddleHeight(int paddleHeight) {
