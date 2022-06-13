@@ -73,21 +73,17 @@ public class Main extends Application {
 
         stage.setOnCloseRequest(windowEvent -> quit());
 
-        scene.setOnKeyPressed(
-                event -> {
-                    String code = event.getCode().toString();
-                    if (!INPUT.contains(code)) {
-                        INPUT.add(code);
-                    }
-                }
-        );
+        scene.setOnKeyPressed(event -> {
+            String code = event.getCode().toString();
+            if (!INPUT.contains(code)) {
+                INPUT.add(code);
+            }
+        });
 
-        scene.setOnKeyReleased(
-                event -> {
-                    String code = event.getCode().toString();
-                    INPUT.remove(code);
-                }
-        );
+        scene.setOnKeyReleased(event -> {
+            String code = event.getCode().toString();
+            INPUT.remove(code);
+        });
     }
 
     public static void initCanvas(int width, int height) {
@@ -103,6 +99,11 @@ public class Main extends Application {
                 long deltaTime = now - lastUpdate;
 
                 double elapsedSeconds = deltaTime > 99_999_999 ? 0.04 : deltaTime / 1e9;
+
+                if (scoreRight == 5 || scoreLeft == 5) {
+                    drawGameOverScreen();
+                    return;
+                }
 
                 if (INPUT.contains("UP") || INPUT.contains("W") || INPUT.contains("K")) {
                     if (paddleY <= 0) paddleY = 0;
@@ -144,6 +145,25 @@ public class Main extends Application {
         };
 
         timer.start();
+    }
+
+    private static void drawGameOverScreen() {
+        final GraphicsContext GC = canvas.getGraphicsContext2D();
+
+        GC.setFill(Color.WHITE);
+        GC.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+
+        GC.setFill(Color.GRAY);
+        GC.setFont(Font.font("sans serif", FontWeight.BOLD, 32));
+        GC.setTextAlign(TextAlignment.CENTER);
+        GC.fillText("GAME OVER", canvas.getWidth() / 2.0, canvas.getHeight() / 2.0 - 40);
+        GC.fillText(scoreLeft + " : " + scoreRight, canvas.getWidth() / 2.0, canvas.getHeight() / 2.0);
+
+        if (paddleX < canvas.getWidth() / 2.0) GC.fillText(scoreLeft > scoreRight ? "Gewonnen!" : "Verloren!", canvas.getWidth() / 2.0, canvas.getHeight() / 2.0 + 40);
+        else GC.fillText(scoreRight > scoreLeft ? "Gewonnen!" : "Verloren!", canvas.getWidth() / 2.0, canvas.getHeight() / 2.0 + 40);
+
+        quit();
     }
 
     public static void quit() {
