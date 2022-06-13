@@ -142,7 +142,19 @@ public class Game extends Thread {
 
         sleep(1000);
 
-        setRandomAngle(Math.random() * Math.PI * 2, DEFAULT_SPEED);
+        // 7PI/4 to PI/4
+        // 3PI/4 to 5PI/4
+        double angle;
+        while (true) {
+            double randomAngle = Math.random() * Math.PI * 2;
+
+            if (randomAngle <= Math.PI / 4 || randomAngle >= 7 * Math.PI / 4 || (randomAngle >= 3 * Math.PI / 4 && randomAngle <= 5 * Math.PI / 4)) {
+                angle = randomAngle;
+                break;
+            }
+        }
+
+        setRandomAngle(angle, DEFAULT_SPEED);
     }
 
     private void resetBallPosition() {
