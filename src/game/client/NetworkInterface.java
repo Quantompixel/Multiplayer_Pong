@@ -72,7 +72,7 @@ public class NetworkInterface extends Thread {
                         Main.setPaddleWidth(paddleWidth);
                         Main.setPaddleSpeed(paddleSpeed);
                     }
-                    case "BALLUPDATE" -> {
+                    case "BALL-UPDATE" -> {
 
                         double x = -1;
                         double y = -1;
@@ -98,20 +98,18 @@ public class NetworkInterface extends Thread {
                             }
                         }
 
-                        System.out.println(time - System.nanoTime());
-
                         Main.setBallX(x);
                         Main.setBallY(y);
                         Main.setBallSpeedX(vx);
                         Main.setBallSpeedY(vy);
                     }
 
-                    case "PADDLEUPDATE" -> {
-                        String enemY = message.split("=")[1];
-                        Main.setEnemyPaddleY(Double.parseDouble(enemY));
+                    case "PADDLE-UPDATE" -> {
+                        String enemy = message.split("=")[1];
+                        Main.setEnemyPaddleY(Double.parseDouble(enemy));
                     }
 
-                    case "SCOREUPDATE" -> {
+                    case "SCORE-UPDATE" -> {
                         for (String param : params) {
                             int value = Integer.parseInt(param.substring(param.indexOf('=') + 1));
                             if (param.startsWith("left")) {
@@ -134,7 +132,7 @@ public class NetworkInterface extends Thread {
     }
 
     public void sendPaddleUpdate(double paddleY) {
-        WRITER.println("PADDLEUPDATE:paddleY=" + paddleY);
+        WRITER.println("PADDLE-UPDATE:paddleY=" + paddleY);
     }
 
     public void closeConnection() {

@@ -137,8 +137,8 @@ public class Game extends Thread {
         speedY = 0;
         sendBallUpdate(playerRight, playerLeft);
 
-        playerLeft.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
-        playerRight.sendMessage("SCOREUPDATE:left=" + scoreLeft + ",right=" + scoreRight);
+        playerLeft.sendMessage("SCORE-UPDATE:left=" + scoreLeft + ",right=" + scoreRight);
+        playerRight.sendMessage("SCORE-UPDATE:left=" + scoreLeft + ",right=" + scoreRight);
 
         sleep(1000);
 
@@ -176,7 +176,7 @@ public class Game extends Thread {
 
     private void sendBallUpdate(Player... players) {
         for (Player player : players) {
-            player.sendMessage("BALLUPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY + ",time=" + System.nanoTime());
+            player.sendMessage("BALL-UPDATE:x=" + ballX + ",y=" + ballY + ",vx=" + speedX + ",vy=" + speedY + ",time=" + System.nanoTime());
         }
     }
 
@@ -189,8 +189,8 @@ public class Game extends Thread {
     }
 
     public void sendPaddleUpdate(double position, Player sender) {
-        if (sender.equals(playerRight)) playerLeft.sendMessage("PADDLEUPDATE:paddleY=" + position);
-        else playerRight.sendMessage("PADDLEUPDATE:paddleY=" + position);
+        if (sender.equals(playerRight)) playerLeft.sendMessage("PADDLE-UPDATE:paddleY=" + position);
+        else playerRight.sendMessage("PADDLE-UPDATE:paddleY=" + position);
     }
 
     public void checkClientsConnected() {
